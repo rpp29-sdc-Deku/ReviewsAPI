@@ -8,13 +8,14 @@ import '../dist/styles/product_overview.css';
 import getReviews from './helpers/reviews/serverReview.js';
 import getMeta from './helpers/reviews/meta.js';
 import withClickTrackingQA from './components/questions_answers/withClickTrackingQA.jsx';
+import axios from 'axios';
 const QuestionsAnswersWithClickTracking = withClickTrackingQA(QuestionsAnswers);
 
 class App extends React.Component {
   constructor (props) {
     super(props);
     this.state = {
-      id: 36300,
+      id: 47421,
       value: '',
       starValue: 0,
       reviewLength: 0,

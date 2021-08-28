@@ -3,6 +3,11 @@ node_modules
 coverage/
 config.js
 .env
+dotenv.env
+dotenv
 hackreactor-fec.pem
 /client/dist/bundle.js.br
 /client/dist/bundle.js.gz
+/dataDump
+atelierKeyPair.pem
+configDB.js

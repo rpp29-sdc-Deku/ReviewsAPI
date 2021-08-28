@@ -1,12 +1,13 @@
 /* eslint-disable camelcase */
 const axios = require('axios');
 const apiToken = process.env.API_TOKEN;
+const apiURL = process.env.API;
+
+axios.defaults.baseURL = apiURL;
+axios.defaults.headers.common.Authorization = apiToken;
 
 const getReviews = (product, sort) => {
-  return axios.get('https://app-hrsei-api.herokuapp.com/api/fec2/hr-rpp/reviews', {
-    headers: {
-      Authorization: apiToken
-    },
+  return axios.get('reviews', {
     params: {
       sort: sort,
       count: 100,
@@ -17,34 +18,26 @@ const getReviews = (product, sort) => {
   });
 };
 const getMeta = (product) => {
-  return axios.get(`https://app-hrsei-api.herokuapp.com/api/fec2/hr-rpp/reviews/meta/?product_id=${product}`, {
-    headers: {
-      Authorization: apiToken
-    }
-  }).then((results) => {
-    return results.data;
-  });
+  return axios.get(`reviews/meta/?product_id=${product}`)
+    .then(results => {
+      return results.data;
+    })
+    .catch(err => {
+      console.log(err.stack);
+    });
 };
 const putHelp = (reviewID) => {
-  return axios.put(`https://app-hrsei-api.herokuapp.com/api/fec2/hr-rpp/reviews/${reviewID}/helpful`, null, {
-    headers: {
-      Authorization: apiToken
-    }
-  });
+  return axios.put(`reviews/${reviewID}/helpful`, null);
 };
 
 const postReview = (obj) => {
   const { product_id, rating, summary, body, recommend, name, email, characteristics } = obj;
   const data = { product_id: product_id, rating: rating, summary: summary, body: body, recommend: recommend, name: name, email: email, characteristics: characteristics, photos: [] };
-  return axios.post('https://app-hrsei-api.herokuapp.com/api/fec2/hr-rpp/reviews', data, {
-    headers: {
-      Authorization: apiToken
-    }
-  });
+  return axios.post('reviews', data);
 };
 
 const putReport = (reviewID) => {
-  return axios.put(`https://app-hrsei-api.herokuapp.com/api/fec2/hr-rpp/reviews/${reviewID}/report`, null, {
+  return axios.put(`reviews/${reviewID}/report`, null, {
     headers: {
       Authorization: apiToken
     }
@@ -54,15 +47,12 @@ const putReport = (reviewID) => {
 const postInteraction = (element) => {
   const time = new Date();
   console.log('date', time);
-  return axios.post('https://app-hrsei-api.herokuapp.com/api/fec2/hr-rpp/interactions', {
+  return axios.post('interactions', {
     element: element,
     widget: 'Rating & Reviews',
     time: time
-  }, {
-    headers: {
-      Authorization: apiToken
-    }
-  }).then((res) => console.log(res)).catch((err) => console.log(err));
+  })
+    .then((res) => console.log(res)).catch((err) => console.log(err));
 };
 
 module.exports.getReviews = getReviews;
