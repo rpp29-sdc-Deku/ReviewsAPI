@@ -40,11 +40,11 @@ const validator = {
           "bsonType": "int"
         },
         "photoURLs": {
-          "bsonType": "array"
+          "bsonType": "array",
           "items": {
             "bsonType": "string"
           }
-        }
+        },
         "characteristic_reviews":
         "bsonType": "array",
         "items": {
