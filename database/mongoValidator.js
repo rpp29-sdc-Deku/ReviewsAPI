@@ -1,69 +1,73 @@
-const validator = {
+module.exports.validator = {
   $jsonSchema: {
-    "bsonType": "object",
-    "title": "productId",
-    "properties": {
-      "bsonType": "array",
-      "title": "reviews",
-      "items": {
-        "id": {
-          "bsonType": "int"
+    bsonType: 'object',
+    title: 'productId',
+    properties: {
+      bsonType: 'array',
+      title: 'reviews',
+      items: {
+        id: {
+          bsonType: 'int'
         },
-        "rating": {
-          "bsonType": "int"
+        rating: {
+          bsonType: 'int'
         },
-        "date": {
-          "bsonType": "timestamp"
+        date: {
+          bsonType: 'timestamp'
         },
-        "summary": {
-          "bsonType": "string"
+        summary: {
+          bsonType: 'string'
         },
-        "body": {
-          "bsonType": "string"
+        body: {
+          bsonType: 'string'
         },
-        "recommend": {
-          "bsonType": "bool"
+        recommend: {
+          bsonType: 'bool'
         },
-        "reported": {
-          "bsonType": "bool"
+        reported: {
+          bsonType: 'bool'
         },
-        "reviewer_name": {
-          "bsonType": "string"
+        reviewerName: {
+          bsonType: 'string'
         },
-        "reviewer_email": {
-          "bsonType": "string"
+        reviewerEmail: {
+          bsonType: 'string'
         },
-        "response": {
-          "bsonType": "string"
+        response: {
+          bsonType: 'string'
         },
-        "helpfulness": {
-          "bsonType": "int"
+        helpfulness: {
+          bsonType: 'int'
         },
-        "photoURLs": {
-          "bsonType": "array",
-          "items": {
-            "bsonType": "string"
+        photoURLs: {
+          bsonType: 'array',
+          items: {
+            bsonType: 'string'
           }
         },
-        "characteristic_reviews":
-        "bsonType": "array",
-        "items": {
-          {
-            "bsonType": "object",
-            "title": "characteristic",
-            "properties": {
-              "name": {
-                "bsonType": "string"
+        characteristic_reviews: {
+          bsonType: 'array',
+          items: {
+            bsonType: 'object',
+            title: 'characteristic',
+            properties: {
+              name: {
+                bsonType: 'string'
               },
-              "rating": {
-                "bsonType": "int"
+              rating: {
+                bsonType: 'int'
               }
             }
           }
         }
       }
-    }
+    },
+    required: [
+      'productId',
+      'rating',
+      'date',
+      'reviewerName',
+      'reviewerEmail'
+    ]
   }
 };
-
-export default validator;

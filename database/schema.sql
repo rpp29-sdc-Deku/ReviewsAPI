@@ -6,7 +6,7 @@ CREATE TABLE reviews (
   id int not null auto_increment,
   product_id int,
   rating int not null, /* Inner join here? Cache other reviews with the same rating? */
-  date int not null,
+  date bigint not null,
   summary varchar(240),
   body text,
   recommend boolean,
@@ -61,4 +61,4 @@ CREATE TABLE photos (
   primary key (id)
 );
 
-/* mysql -u root -p < database/schema.sql */
+/* mysql -u root -p < schema.sql */
