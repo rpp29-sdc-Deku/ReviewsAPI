@@ -1,6 +1,13 @@
 module.exports.validator = {
   $jsonSchema: {
     bsonType: 'object',
+    required: [
+      'productId',
+      'rating',
+      'date',
+      'reviewerName',
+      'reviewerEmail'
+    ],
     title: 'productId',
     properties: {
       bsonType: 'array',
@@ -61,13 +68,6 @@ module.exports.validator = {
           }
         }
       }
-    },
-    required: [
-      'productId',
-      'rating',
-      'date',
-      'reviewerName',
-      'reviewerEmail'
-    ]
+    }
   }
 };

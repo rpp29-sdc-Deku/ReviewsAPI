@@ -1,22 +1,47 @@
 /* eslint-disable camelcase */
 const axios = require('axios');
+const db = require('../database/mysql.js');
 const apiToken = process.env.API_TOKEN;
 const apiURL = process.env.API;
 
 axios.defaults.baseURL = apiURL;
 axios.defaults.headers.common.Authorization = apiToken;
 
+// TODO: replace all axios HTTP requests with DB queries
+
 const getReviews = (product, sort) => {
-  return axios.get('reviews', {
-    params: {
-      sort: sort,
-      count: 100,
-      product_id: product
+  const sortOptions = {
+    helpful: 'helpfulness',
+    newest: 'date',
+    relevant: 'helpfulness DESC, date DESC'
+  };
+
+  const query = `
+    SELECT * FROM reviews
+    WHERE product_id=${product}
+    ORDER BY ${sortOptions[sort]}
+    LIMIT 100
+  `;
+
+  db.query(query, (err, results) => {
+    if (err) {
+      return err.stack;
     }
-  }).then((results) => {
-    return results.data.results;
+    console.log(results);
+    // return results;
   });
+
+  // return axios.get('reviews', {
+  //   params: {
+  //     sort: sort,
+  //     count: 100,
+  //     product_id: product
+  //   }
+  // }).then((results) => {
+  //   return results.data.results;
+  // });
 };
+
 const getMeta = (product) => {
   return axios.get(`reviews/meta/?product_id=${product}`)
     .then(results => {

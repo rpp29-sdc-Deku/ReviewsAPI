@@ -4,8 +4,6 @@ const checkWatch = require('../server/helpers/stopWatch.js');
 const dbConfig = require('../configDB.js');
 const path = require('path');
 
-// const etlSourceFile = path.resolve('../dataDump/reviews.csv');
-// const dbTable = 'reviews';
 const etlSources = {
   // reviews: '../dataDump/reviews.csv',
   characteristics: '../dataDump/characteristics.csv',
@@ -22,6 +20,27 @@ db.connect(err => {
 
   console.log(`Connected to ${dbConfig.database} as ${dbConfig.user}`);
 });
+
+// for (const table in etlSources) {
+//   const etlSourceFile = path.resolve(etlSources[table]);
+//   getColumns(etlSourceFile, columns => {
+//     db.query('LOAD DATA LOCAL INFILE "' + etlSourceFile +
+//       `" INTO TABLE ${table} ` +
+//       'FIELDS TERMINATED BY "," ' +
+//       'ENCLOSED BY \'"\' ' +
+//       'LINES TERMINATED BY \'\n\' ' +
+//       'IGNORE 1 ROWS ' +
+//       `(${[columns]});`, (err, results) => {
+//       // db.query(`INSERT IGNORE INTO reviews (${columns}) VALUES (?);`, [row], (err, results, rows) => {
+//       if (err) {
+//         console.log(err);
+//       } else {
+//         const time = checkWatch();
+//         console.log(results, `${table}: ${time.display.lap} (total: ${time.display.total}`);
+//       }
+//     });
+//   });
+// }
 
 // const insertClosure = () => {
 //   let columns = '';
@@ -44,27 +63,5 @@ db.connect(err => {
 // };
 
 // const insertCallback = insertClosure();
-const checkWatch = stopwatch();
-
-for (const table in etlSources) {
-  const etlSourceFile = path.resolve(etlSources[table]);
-  getColumns(etlSourceFile, columns => {
-    db.query('LOAD DATA LOCAL INFILE "' + etlSourceFile +
-      `" INTO TABLE ${table} ` +
-      'FIELDS TERMINATED BY "," ' +
-      'ENCLOSED BY \'"\' ' +
-      'LINES TERMINATED BY \'\n\' ' +
-      'IGNORE 1 ROWS ' +
-      `(${[columns]});`, (err, results) => {
-      // db.query(`INSERT IGNORE INTO reviews (${columns}) VALUES (?);`, [row], (err, results, rows) => {
-      if (err) {
-        console.log(err);
-      } else {
-        const time = checkWatch();
-        console.log(results, `${table}: ${time.display.lap} (total: ${time.display.total}`);
-      }
-    });
-  });
-}
 
 module.exports = db;

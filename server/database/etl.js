@@ -43,7 +43,7 @@ module.exports = {
     });
 
     rd.on('close', () => {
-      console.log(`${lines - 1} rows`);
+      console.log(`${sourceFile}: ${lines - 1} rows`);
       callback(columns);
     });
   }
