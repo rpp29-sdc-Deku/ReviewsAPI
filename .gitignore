@@ -8,7 +8,7 @@ dotenv
 hackreactor-fec.pem
 /client/dist/bundle.js.br
 /client/dist/bundle.js.gz
-/server/dataDump
+/server/database/dataDump
 /server/database/testData.txt
 atelierKeyPair.pem
 configDB.js

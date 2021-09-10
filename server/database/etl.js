@@ -1,5 +1,6 @@
 const fs = require('fs');
 const readline = require('readline');
+const { db } = require('./mysql.js');
 
 // const data = [];
 

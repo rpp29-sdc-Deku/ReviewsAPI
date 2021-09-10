@@ -19,9 +19,10 @@ const getReviews = (product, sort) => {
   const query = `
     SELECT * FROM reviews
     WHERE product_id=${product}
+    HAVING reported=false
     ORDER BY ${sortOptions[sort]}
     LIMIT 100
-  `;
+  `; // Not sure about the "HAVING" line ...
 
   db.query(query, (err, results) => {
     if (err) {

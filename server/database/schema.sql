@@ -20,7 +20,7 @@ CREATE TABLE reviews (
 
 CREATE TABLE ratings (
   id int not null auto_increment,
-  product_id int,
+  product_id int not null,
   index product_index (product_id),
   rating int,
   primary key (id)
