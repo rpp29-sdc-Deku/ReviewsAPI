@@ -3,11 +3,13 @@ const { getReviews, getMeta, putHelp, postReview, putReport, postInteraction } =
 
 router.get('/reviews', (req, res) => {
   // console.log(req.query);
-  getReviews(req.query.product_id, req.query.sort).then(results => {
-    res.send(results);
-  }).catch(err => {
-    console.log(err.stack);
-  });
+  // const { product_id, sort, page, count, query } = req;
+  getReviews(req.query)
+    .then(results => {
+      res.send(results);
+    }).catch(err => {
+      console.log(err.stack);
+    });
 });
 
 router.put('/reviews/helpful', (req, res) => {

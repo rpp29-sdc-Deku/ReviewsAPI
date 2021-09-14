@@ -11,24 +11,26 @@ axios.defaults.headers.common.Authorization = apiToken;
 
 // TODO: replace all axios HTTP requests with DB queries
 
-const getReviews = (product, sort = 'newest') => {
-  console.log('GET reviews:', product, sort);
+const getReviews = ({ product_id, sort = 'newest', page = 1, count = 10 }) => {
+  console.log('GET reviews:', product_id, sort);
   const sortOptions = {
     helpful: 'helpfulness',
     newest: 'date',
     relevant: 'helpfulness DESC, date DESC'
   };
 
-  const query = `
-    SELECT reviews.*, photos.id, photos.url
+  const reviewsQuery = `
+    SELECT reviews.*
     FROM reviews
-    WHERE reviews.product_id=${product}
-    CROSS JOIN photos
-    WHERE photos.review_id=reviews.id
+    WHERE reviews.product_id=${product_id} AND reviews.id >= ${page}
     HAVING reviews.reported=false
+    SELECT *
+    FROM photos
+    WHERE id IN (${reviews.map(review => review.id).join(', ')})
     ORDER BY ${sortOptions[sort]}
-    LIMIT 100
+    LIMIT ${count}
   `;
+
   // const query = `
   //   SELECT * FROM reviews
   //   WHERE product_id=${product}
@@ -37,13 +39,23 @@ const getReviews = (product, sort = 'newest') => {
   //   LIMIT 100
   // `;
 
-  return db(query, (err, results) => {
-    if (err) {
-      console.log(err.stack);
-    } else {
-      // console.log(results);
-      return results;
-    }
+  return new Promise((resolve, reject) => {
+    db(reviewsQuery)
+      .then(reviews => {
+        const photosQuery = `
+          SELECT *
+          FROM photos
+          WHERE id IN (${reviews.map(review => review.id).join(', ')})
+        `;
+        console.log(photosQuery);
+        db(photosQuery).then(photos => {
+          reviews.photos = photos;
+          resolve(reviews);
+        });
+      })
+      .catch(err => {
+        reject(err.stack);
+      });
   });
 
   // return axios.get('reviews', {

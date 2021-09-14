@@ -41,6 +41,7 @@ module.exports = (query) => {
       if (err) {
         reject(err);
       } else {
+        console.log(results);
         resolve(results);
       }
     });
