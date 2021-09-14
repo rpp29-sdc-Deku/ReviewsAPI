@@ -1,6 +1,8 @@
 /* eslint-disable camelcase */
 const axios = require('axios');
 const db = require('../database/mysql.js');
+// const db = mysql.connection;
+
 const apiToken = process.env.API_TOKEN;
 const apiURL = process.env.API;
 
@@ -9,7 +11,8 @@ axios.defaults.headers.common.Authorization = apiToken;
 
 // TODO: replace all axios HTTP requests with DB queries
 
-const getReviews = (product, sort) => {
+const getReviews = (product, sort = 'newest') => {
+  console.log('GET reviews:', product, sort);
   const sortOptions = {
     helpful: 'helpfulness',
     newest: 'date',
@@ -17,19 +20,30 @@ const getReviews = (product, sort) => {
   };
 
   const query = `
-    SELECT * FROM reviews
-    WHERE product_id=${product}
-    HAVING reported=false
+    SELECT reviews.*, photos.id, photos.url
+    FROM reviews
+    WHERE reviews.product_id=${product}
+    CROSS JOIN photos
+    WHERE photos.review_id=reviews.id
+    HAVING reviews.reported=false
     ORDER BY ${sortOptions[sort]}
     LIMIT 100
-  `; // Not sure about the "HAVING" line ...
+  `;
+  // const query = `
+  //   SELECT * FROM reviews
+  //   WHERE product_id=${product}
+  //   HAVING reported=false
+  //   ORDER BY ${sortOptions[sort]}
+  //   LIMIT 100
+  // `;
 
-  db.query(query, (err, results) => {
+  return db(query, (err, results) => {
     if (err) {
-      return err.stack;
+      console.log(err.stack);
+    } else {
+      // console.log(results);
+      return results;
     }
-    console.log(results);
-    // return results;
   });
 
   // return axios.get('reviews', {

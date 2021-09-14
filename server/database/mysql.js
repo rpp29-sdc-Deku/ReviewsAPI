@@ -1,15 +1,7 @@
 const mysql = require('mysql');
-const { getColumns } = require('./etl.js');
-const checkWatch = require('../server/helpers/stopWatch.js');
-const dbConfig = require('../configDB.js');
-const path = require('path');
-
-const etlSources = {
-  // reviews: '../dataDump/reviews.csv',
-  characteristics: '../dataDump/characteristics.csv',
-  characteristic_ratings: '../dataDump/characteristic_reviews.csv',
-  photos: '../dataDump/reviews_photos.csv'
-};
+// const { getColumns } = require('./etl.js');
+// const checkWatch = require('../server/helpers/stopWatch.js');
+const dbConfig = require('../../configDB.js');
 
 const db = mysql.createConnection(dbConfig);
 
@@ -20,27 +12,6 @@ db.connect(err => {
 
   console.log(`Connected to ${dbConfig.database} as ${dbConfig.user}`);
 });
-
-// for (const table in etlSources) {
-//   const etlSourceFile = path.resolve(etlSources[table]);
-//   getColumns(etlSourceFile, columns => {
-//     db.query('LOAD DATA LOCAL INFILE "' + etlSourceFile +
-//       `" INTO TABLE ${table} ` +
-//       'FIELDS TERMINATED BY "," ' +
-//       'ENCLOSED BY \'"\' ' +
-//       'LINES TERMINATED BY \'\n\' ' +
-//       'IGNORE 1 ROWS ' +
-//       `(${[columns]});`, (err, results) => {
-//       // db.query(`INSERT IGNORE INTO reviews (${columns}) VALUES (?);`, [row], (err, results, rows) => {
-//       if (err) {
-//         console.log(err);
-//       } else {
-//         const time = checkWatch();
-//         console.log(results, `${table}: ${time.display.lap} (total: ${time.display.total}`);
-//       }
-//     });
-//   });
-// }
 
 // const insertClosure = () => {
 //   let columns = '';
@@ -64,4 +35,14 @@ db.connect(err => {
 
 // const insertCallback = insertClosure();
 
-module.exports = db;
+module.exports = (query) => {
+  return new Promise((resolve, reject) => {
+    db.query(query, (err, results) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(results);
+      }
+    });
+  });
+};

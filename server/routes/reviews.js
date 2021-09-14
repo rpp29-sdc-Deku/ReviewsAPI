@@ -2,7 +2,8 @@ const router = require('express').Router();
 const { getReviews, getMeta, putHelp, postReview, putReport, postInteraction } = require('../helpers/reviews_helpers.js');
 
 router.get('/reviews', (req, res) => {
-  getReviews(req.query.productId, req.query.sort).then(results => {
+  // console.log(req.query);
+  getReviews(req.query.product_id, req.query.sort).then(results => {
     res.send(results);
   }).catch(err => {
     console.log(err.stack);

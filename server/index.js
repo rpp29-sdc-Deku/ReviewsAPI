@@ -21,6 +21,7 @@ app.use('/', expressStaticGzip(path.join(__dirname, '/../client/dist'), {
 app.use(cors());
 
 app.listen(4000);
+console.log('Listening on port 4000');
 
 app.use('/atelier', productOverview);
 app.use('/atelier', questionsAnswers);
