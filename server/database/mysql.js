@@ -39,6 +39,7 @@ module.exports = (query) => {
   return new Promise((resolve, reject) => {
     db.query(query, (err, results) => {
       if (err) {
+        console.log(err.stack);
         reject(err);
       } else {
         console.log(results);

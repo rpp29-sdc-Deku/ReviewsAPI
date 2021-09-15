@@ -6,6 +6,7 @@ router.get('/reviews', (req, res) => {
   // const { product_id, sort, page, count, query } = req;
   getReviews(req.query)
     .then(results => {
+      console.log('Reponse from DB:', results);
       res.send(results);
     }).catch(err => {
       console.log(err.stack);

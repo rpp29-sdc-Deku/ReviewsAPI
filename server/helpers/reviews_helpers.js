@@ -20,15 +20,15 @@ const getReviews = ({ product_id, sort = 'newest', page = 1, count = 10 }) => {
   };
 
   const reviewsQuery = `
-    SELECT reviews.*
-    FROM reviews
-    WHERE reviews.product_id=${product_id} AND reviews.id >= ${page}
-    HAVING reviews.reported=false
-    SELECT *
-    FROM photos
-    WHERE id IN (${reviews.map(review => review.id).join(', ')})
-    ORDER BY ${sortOptions[sort]}
-    LIMIT ${count}
+    CREATE TEMPORARY TABLE reviewIds (review_id INT);
+
+    INSERT INTO reviewIds (review_id)
+      SELECT id
+      FROM reviews
+      WHERE product_id=${product_id}   AND id >= ${page}
+      HAVING reported=false
+      ORDER BY ${sortOptions[sort]}
+      LIMIT ${count};
   `;
 
   // const query = `
@@ -41,32 +41,33 @@ const getReviews = ({ product_id, sort = 'newest', page = 1, count = 10 }) => {
 
   return new Promise((resolve, reject) => {
     db(reviewsQuery)
-      .then(reviews => {
-        const photosQuery = `
-          SELECT *
-          FROM photos
-          WHERE id IN (${reviews.map(review => review.id).join(', ')})
-        `;
-        console.log(photosQuery);
-        db(photosQuery).then(photos => {
-          reviews.photos = photos;
-          resolve(reviews);
-        });
+      .then(results => {
+        console.log(results);
+        resolve(results);
       })
       .catch(err => {
         reject(err.stack);
       });
   });
-
-  // return axios.get('reviews', {
-  //   params: {
-  //     sort: sort,
-  //     count: 100,
-  //     product_id: product
-  //   }
-  // }).then((results) => {
-  //   return results.data.results;
-  // });
+  // return new Promise((resolve, reject) => {
+  //   db(reviewsQuery)
+  //     .then(reviews => {
+  //       const photosQuery = `
+  //         SELECT *
+  //         FROM photos
+  //         WHERE id IN (${reviews.map(review => review.id).join(', ')})
+  //       `;
+  //       // console.log(photosQuery);
+  //       db(photosQuery).then(photos => {
+  //         // const RowDataPacket = { photos: photos };
+  //         reviews.photos = photos;
+  //         // console.log(reviews);
+  //         resolve(reviews);
+  //       });
+  //     })
+  //     .catch(err => {
+  //       reject(err.stack);
+  //     });
 };
 
 const getMeta = (product) => {

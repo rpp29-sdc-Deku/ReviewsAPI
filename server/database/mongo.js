@@ -8,10 +8,9 @@ const dbName = 'test';
 
 async function main () {
   await mongo.connect();
-  console.log('Connected to MongoDB server');
   const db = mongo.db(dbName);
-  const collection = db.createCollection('dekuReviews', { validator: validator });
-
+  console.log('Connected to MongoDB server');
+  const collection = await db.createCollection('dekuReviews');
   console.log(collection);
 
   return 'done.';
