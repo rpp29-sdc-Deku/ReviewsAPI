@@ -3,6 +3,7 @@ const fs = require('fs');
 const readline = require('readline');
 // const db = require('./mysql.js');
 const checkWatch = require('../helpers/stopWatch.js');
+const db = require('./mongo.js');
 
 const etlSources = {
   reviews: './dataDump/reviews.csv',
@@ -39,19 +40,19 @@ const mongoETL = async (sourceFile, insertCallback, exit) => {
     partialLine = lastChar ? lastLine : '';
 
     if (records++ === 0) {
-      insertCallback(lines[0].split(','));
+      db.insertOne(lines[0].split(','));
       start = 1;
     }
 
     for (let i = start; i < end; i++) {
-      insertCallback(JSON.parse('[' + lines[i] + ']'));
+      db.insertOne(JSON.parse('[' + lines[i] + ']'));
     }
   }
 
   stream.on('close', () => {
     if (partialLine.length) {
       // Last line hasn't been recorded
-      insertCallback(JSON.parse('[' + partialLine + ']'));
+      db.inseertOne(JSON.parse('[' + partialLine + ']'));
     }
     const time = Date.now() - start;
     const message = time > 1000 ? time + ' seconds' : time + 'ms';
