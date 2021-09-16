@@ -4,21 +4,19 @@ const validator = require('./mongoValidator.js');
 
 const url = 'mongodb://localhost:27017';
 const mongo = new MongoClient(url);
+mongo.connect();
 
 const dbName = 'test';
 
-mongo.connect();
+const main = async () => {
+  const db = await mongo.db(dbName);
+  console.log('Connected to MongoDB server');
+  const collection = await db.collection('dekuReviews');
+  mongoETL('./dataDump/testFile.csv', (review) => addReview(collection, review), () => { mongo.close(); });
+};
 
-const db = mongo.db(dbName);
-console.log('Connected to MongoDB server');
-const collection = db.collection('dekuReviews');
-console.log(collection);
-
-//   return db;
-// };
-
-const addReview = async (review) => {
-  db.insertOne(review, (err, results) => {
+const addReview = async (collection, review) => {
+  collection.insertOne(review, (err, results) => {
     if (err) {
       throw new Error(err);
     } else {
@@ -27,8 +25,9 @@ const addReview = async (review) => {
   });
 };
 
-mongoETL('./dataDump/testFile.csv', db.insertOne, () => { mongo.close(); });
-// main()
-//   .then(console.log)
-//   .catch(console.error)
-//   .finally(() => mongo.close());
+main()
+  .then(console.log)
+  .catch(console.error)
+  .finally(() => mongo.close());
+
+// module.exports = db;

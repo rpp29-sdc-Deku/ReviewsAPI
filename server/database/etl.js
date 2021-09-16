@@ -40,19 +40,19 @@ const mongoETL = async (sourceFile, insertCallback, exit) => {
     partialLine = lastChar ? lastLine : '';
 
     if (records++ === 0) {
-      db.insertOne(lines[0].split(','));
+      insertCallback(lines[0].split(','));
       start = 1;
     }
 
     for (let i = start; i < end; i++) {
-      db.insertOne(JSON.parse('[' + lines[i] + ']'));
+      insertCallback(JSON.parse('[' + lines[i] + ']'));
     }
   }
 
   stream.on('close', () => {
     if (partialLine.length) {
       // Last line hasn't been recorded
-      db.inseertOne(JSON.parse('[' + partialLine + ']'));
+      insertCallback(JSON.parse('[' + partialLine + ']'));
     }
     const time = Date.now() - start;
     const message = time > 1000 ? time + ' seconds' : time + 'ms';
