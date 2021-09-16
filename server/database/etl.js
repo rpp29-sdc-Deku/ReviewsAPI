@@ -8,7 +8,8 @@ const etlSources = {
   reviews: './dataDump/reviews.csv',
   characteristics: './dataDump/characteristics.csv',
   characteristic_ratings: './dataDump/characteristic_reviews.csv',
-  photos: './dataDump/reviews_photos.csv'
+  photos: './dataDump/reviews_photos.csv',
+  testFile: './dataDump/testFile.csv'
 };
 
 const mongoETL = async (sourceFile, insertCallback, exit) => {
@@ -23,8 +24,8 @@ const mongoETL = async (sourceFile, insertCallback, exit) => {
   let partialLine = '';
 
   const stream = fs.createReadStream(sourceFile, { highWaterMark: chunkSize });
-  for await (const data in stream) {
-    const lines = data.split('\n');
+  for await (const data of stream) {
+    const lines = data.toString().split('\n');
     let start = 0;
     const end = lines.length - 1;
     const lastLine = lines[end];
@@ -32,6 +33,7 @@ const mongoETL = async (sourceFile, insertCallback, exit) => {
     const lastChar = lastIndex > 0 ? lastLine[lastIndex] : '';
 
     if (partialLine.length) {
+      // partialLine is empty the first time through
       lines[0] = partialLine + lines[0];
     }
     partialLine = lastChar ? lastLine : '';
@@ -46,18 +48,15 @@ const mongoETL = async (sourceFile, insertCallback, exit) => {
     }
   }
 
-  // rd.on('line', line => {
-  //   insertCallback(rows++ ? JSON.parse('[' + line + ']') : line.split(','));
-  // });
-
   stream.on('close', () => {
     if (partialLine.length) {
-      insertCallback(JSON.parse('[' + lines[i] + ']'));
+      // Last line hasn't been recorded
+      insertCallback(JSON.parse('[' + partialLine + ']'));
     }
     const time = Date.now() - start;
     const message = time > 1000 ? time + ' seconds' : time + 'ms';
     console.log(`Duration: ${message}`);
-    exit(rows);
+    exit(records);
   });
 };
 
@@ -84,4 +83,6 @@ const etl = (db) => {
   }
 };
 
-module.exports = { etl, getColNames };
+mongoETL('./dataDump/testFile.csv', console.log, () => {});
+
+module.exports = { etl, mongoETL };
