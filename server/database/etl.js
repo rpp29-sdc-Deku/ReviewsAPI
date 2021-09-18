@@ -24,9 +24,22 @@ const mongoETL = async (sourceFile, insertCallback, exit) => {
   const start = Date.now();
   let partialLine = '';
 
-  const stream = fs.createReadStream(sourceFile, { highWaterMark: chunkSize });
+  let keys = [];
+  let keyCount = 0;
+  const inserts = [];
+
+  const keyify = (values) => {
+    const obj = {};
+    for (let i = 0; i < keyCount; i++) {
+      obj[keys[i]] = values[i];
+    }
+    return obj;
+  };
+
+  const stream = fs.createReadStream(path.resolve(sourceFile), { highWaterMark: chunkSize });
   for await (const data of stream) {
     const lines = data.toString().split('\n');
+
     let start = 0;
     const end = lines.length - 1;
     const lastLine = lines[end];
@@ -40,19 +53,22 @@ const mongoETL = async (sourceFile, insertCallback, exit) => {
     partialLine = lastChar ? lastLine : '';
 
     if (records++ === 0) {
-      insertCallback(lines[0].split(','));
+      keys = lines[0].split(',');
+      keyCount = keys.length;
       start = 1;
     }
 
     for (let i = start; i < end; i++) {
-      insertCallback(JSON.parse('[' + lines[i] + ']'));
+      inserts.push(keyify(JSON.parse('[' + lines[i] + ']')));
     }
+
+    insertCallback(inserts);
   }
 
   stream.on('close', () => {
     if (partialLine.length) {
       // Last line hasn't been recorded
-      insertCallback(JSON.parse('[' + partialLine + ']'));
+      insertCallback([keyify(JSON.parse('[' + partialLine + ']'))]);
     }
     const time = Date.now() - start;
     const message = time > 1000 ? time + ' seconds' : time + 'ms';
