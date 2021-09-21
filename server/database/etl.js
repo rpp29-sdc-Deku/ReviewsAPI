@@ -2,7 +2,7 @@ const path = require('path');
 const fs = require('fs');
 const readline = require('readline');
 // const db = require('./mysql.js');
-const checkWatch = require('../helpers/stopWatch.js');
+const stopWatch = require('../helpers/stopWatch.js');
 const db = require('./mongo.js');
 
 const etlSources = {
@@ -13,7 +13,7 @@ const etlSources = {
   testFile: './dataDump/testFile.csv'
 };
 
-const mongoETL = async (sourceFile, insertCallback, exit) => {
+const mongoETL = async (sourceFile, keys, insertCallback, exit) => {
   // const rd = readline.createInterface({
   //   input: fs.createReadStream(sourceFile),
   //   // output: process.stdout,
@@ -21,11 +21,10 @@ const mongoETL = async (sourceFile, insertCallback, exit) => {
   // });
   const chunkSize = 10000000;
   let records = 0;
-  const start = Date.now();
+  const checkWatch = stopWatch();
   let partialLine = '';
 
-  let keys = [];
-  let keyCount = 0;
+  const keyCount = keys.length;
   const inserts = [];
 
   const keyify = (values) => {
@@ -36,9 +35,10 @@ const mongoETL = async (sourceFile, insertCallback, exit) => {
     return obj;
   };
 
-  const stream = fs.createReadStream(path.resolve(sourceFile), { highWaterMark: chunkSize });
+  const stream = fs.createReadStream(sourceFile, { highWaterMark: chunkSize });
   for await (const data of stream) {
     const lines = data.toString().split('\n');
+    // console.log(lines);
 
     let start = 0;
     const end = lines.length - 1;
@@ -53,8 +53,8 @@ const mongoETL = async (sourceFile, insertCallback, exit) => {
     partialLine = lastChar ? lastLine : '';
 
     if (records++ === 0) {
-      keys = lines[0].split(',');
-      keyCount = keys.length;
+      // keys = lines[0].split(',');
+      // keyCount = keys.length;
       start = 1;
     }
 
@@ -70,10 +70,9 @@ const mongoETL = async (sourceFile, insertCallback, exit) => {
       // Last line hasn't been recorded
       insertCallback([keyify(JSON.parse('[' + partialLine + ']'))]);
     }
-    const time = Date.now() - start;
-    const message = time > 1000 ? time + ' seconds' : time + 'ms';
-    console.log(`Duration: ${message}`);
-    exit(records);
+    const time = checkWatch();
+    // const message = time > 1000 ? time + ' seconds' : time + 'ms';
+    exit(records, time);
   });
 };
 
@@ -93,13 +92,13 @@ const etl = (db) => {
           console.log(err);
         } else {
           const time = checkWatch();
-          console.log(results, `${table}: ${time.display.lap} (total: ${time.display.total}`);
+          console.log(results, `${table}: ${time().display.lap} (total: ${time().display.total}`);
         }
       });
     });
   }
 };
 
-mongoETL('./dataDump/testFile.csv', console.log, () => {});
+// mongoETL('./dataDump/testFile.csv', console.log, () => {});
 
 module.exports = { etl, mongoETL };

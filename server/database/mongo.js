@@ -1,5 +1,6 @@
 const { MongoClient } = require('mongodb');
 const { mongoETL } = require('./etl.js');
+const reviewKeys = require('./etl/reviewKeys.js');
 const path = require('path');
 const validator = require('./mongoValidator.js');
 
@@ -8,7 +9,7 @@ const mongo = new MongoClient(url);
 mongo.connect();
 
 const dbName = 'dekuReviews';
-const sourceFile = path.resolve('./dataDump/testFile.csv');
+const sourceFile = path.resolve('./dataDump/reviews.csv');
 
 const main = async () => {
   const db = await mongo.db(dbName);
@@ -26,7 +27,9 @@ const main = async () => {
   // const findResponse = await collection.find();
   // console.log(findResponse);
 
-  await mongoETL(sourceFile, addReviews, () => {});
+  await mongoETL(sourceFile, reviewKeys, addReviews, (records, time) => {
+    console.log(`${records} records inserted in ${time.display.total}`);
+  });
   const read = await collection.find({ product_id: 2 }).toArray();
   console.log(read);
   return 'Done.';
