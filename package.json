@@ -10,6 +10,7 @@
     ]
   },
   "scripts": {
+    "test": "jest --coverage --forceExit",
     "testqa": "jest /client/src/tests/QuestionsAnswers.test.js --coverage",
     "testoverview": "jest /client/src/tests/Overview.test.js --coverage",
     "testrelated": "jest /client/src/tests/RelatedLists.test.js --coverage",

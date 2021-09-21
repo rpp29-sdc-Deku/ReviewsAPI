@@ -42,7 +42,7 @@ module.exports = (query) => {
         console.log(err.stack);
         reject(err);
       } else {
-        console.log(results);
+        // console.log(results);
         resolve(results);
       }
     });

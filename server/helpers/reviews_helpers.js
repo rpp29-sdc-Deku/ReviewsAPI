@@ -20,12 +20,9 @@ const getReviews = ({ product_id, sort = 'newest', page = 1, count = 10 }) => {
   };
 
   const reviewsQuery = `
-    CREATE TEMPORARY TABLE reviewIds (review_id INT);
-
-    INSERT INTO reviewIds (review_id)
-      SELECT id
+      SELECT *
       FROM reviews
-      WHERE product_id=${product_id}   AND id >= ${page}
+      WHERE product_id=${product_id} AND id >= ${page}
       HAVING reported=false
       ORDER BY ${sortOptions[sort]}
       LIMIT ${count};
@@ -97,6 +94,10 @@ const putReport = (reviewID) => {
   });
 };
 
+const fwdQuery = (query) => {
+  return db(query);
+};
+
 const postInteraction = (element) => {
   const time = new Date();
   console.log('date', time);
@@ -108,9 +109,10 @@ const postInteraction = (element) => {
     .then((res) => console.log(res)).catch((err) => console.log(err));
 };
 
-module.exports.getReviews = getReviews;
-module.exports.getMeta = getMeta;
-module.exports.putHelp = putHelp;
-module.exports.postReview = postReview;
-module.exports.putReport = putReport;
-module.exports.postInteraction = postInteraction;
+module.exports = { getReviews, getMeta, putHelp, postReview, putReport, postInteraction, fwdQuery };
+// module.exports.getReviews = getReviews;
+// module.exports.getMeta = getMeta;
+// module.exports.putHelp = putHelp;
+// module.exports.postReview = postReview;
+// module.exports.putReport = putReport;
+// module.exports.postInteraction = postInteraction;
