@@ -36,6 +36,8 @@ const getReviews = ({ product_id, sort = 'newest', page = 1, count = 10 }) => {
   //   LIMIT 100
   // `;
 
+
+
   return new Promise((resolve, reject) => {
     db(reviewsQuery)
       .then(results => {
@@ -68,14 +70,30 @@ const getReviews = ({ product_id, sort = 'newest', page = 1, count = 10 }) => {
 };
 
 const getMeta = (product) => {
-  return axios.get(`reviews/meta/?product_id=${product}`)
-    .then(results => {
-      return results.data;
-    })
-    .catch(err => {
-      console.log(err.stack);
-    });
+  // characteristics, characteristic_ratings,
+  const query = `
+    SELECT * FROM characteristics WHERE product_id=${product}
+  `;
+
+  return new Promise((resolve, reject) => {
+    db(query)
+      .then(res => {
+        console.log('Reviews metadata from DB:', res);
+        resolve(res);
+      })
+      .catch(err => {
+        reject(err);
+      });
+  });
+  // return axios.get(`reviews/meta/?product_id=${product}`)
+  //   .then(results => {
+  //     return results.data;
+  //   })
+  //   .catch(err => {
+  //     console.log(err.stack);
+  //   });
 };
+
 const putHelp = (reviewID) => {
   return axios.put(`reviews/${reviewID}/helpful`, null);
 };
