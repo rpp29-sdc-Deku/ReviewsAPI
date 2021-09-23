@@ -19,14 +19,33 @@ const getReviews = ({ product_id, sort = 'newest', page = 1, count = 10 }) => {
     relevant: 'helpfulness DESC, date DESC'
   };
 
+  // const reviewsQuery = `
+  //     SELECT *
+  //     FROM reviews
+  //     WHERE product_id=${product_id} AND id >= ${page}
+  //     HAVING reported=false
+  //     ORDER BY ${sortOptions[sort]}
+  //     LIMIT ${count};
+  // `;
+
+  // const reviewsQuery = `
+  //   SELECT reviews.*
+  //   FROM reviews JOIN photos ON reviews.id = photos.review_id
+  //   WHERE reviews.product_id=${product_id} AND reviews.id >= ${page}
+  //   HAVING reported=false
+  //   ORDER BY ${sortOptions[sort]}
+  //   LIMIT ${count};
+  // `;
   const reviewsQuery = `
-      SELECT *
-      FROM reviews
-      WHERE product_id=${product_id} AND id >= ${page}
-      HAVING reported=false
-      ORDER BY ${sortOptions[sort]}
-      LIMIT ${count};
+    SELECT reviews.*, photos.id, photos.url
+    FROM reviews, photos
+    WHERE reviews.product_id=5 AND photos.review_id = reviews.id
   `;
+
+  const photoReviewQuery = `select reviews.*, photos.id as photo_id, photos.review_id, photos.url from reviews INNER JOIN photos ON photos.review_id = reviews.id WHERE reviews.product_id=2;`
+  // const photosQuery = `
+  //   SELECT (id, url) FROM photos
+  //   WHERE photos.review`
 
   // const query = `
   //   SELECT * FROM reviews
@@ -36,8 +55,6 @@ const getReviews = ({ product_id, sort = 'newest', page = 1, count = 10 }) => {
   //   LIMIT 100
   // `;
 
-
-
   return new Promise((resolve, reject) => {
     db(reviewsQuery)
       .then(results => {
@@ -45,6 +62,7 @@ const getReviews = ({ product_id, sort = 'newest', page = 1, count = 10 }) => {
         resolve(results);
       })
       .catch(err => {
+        console.log(err.stack);
         reject(err.stack);
       });
   });
