@@ -153,7 +153,9 @@ class Reviews extends React.Component {
   }
 
   getProductDetails () {
-    this.props.getReviews(this.props.product_id, this.state.sortBy, (results) => {
+    console.log('GET request from reviews feature:', this.props.product_id, this.state.sortBy);
+    this.props.getReviews(this.props.product_id, 'newest', (results) => {
+      console.log('Reviews:', results);
       this.setState({
         reviewList: results
       });

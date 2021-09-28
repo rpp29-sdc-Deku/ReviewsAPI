@@ -1,17 +1,17 @@
-const path = require('path');
+// const path = require('path');
 const fs = require('fs');
-const readline = require('readline');
+// const readline = require('readline');
 // const db = require('./mysql.js');
 const stopWatch = require('../helpers/stopWatch.js');
-const db = require('./mongo.js');
+// const db = require('./mongo.js');
 
-const etlSources = {
-  reviews: './dataDump/reviews.csv',
-  characteristics: './dataDump/characteristics.csv',
-  characteristic_ratings: './dataDump/characteristic_reviews.csv',
-  photos: './dataDump/reviews_photos.csv',
-  testFile: './dataDump/testFile.csv'
-};
+// const etlSources = {
+//   reviews: './dataDump/reviews.csv',
+//   characteristics: './dataDump/characteristics.csv',
+//   characteristic_ratings: './dataDump/characteristic_reviews.csv',
+//   photos: './dataDump/reviews_photos.csv',
+//   testFile: './dataDump/testFile.csv'
+// };
 
 const mongoETL = async (sourceFile, keys, insertCallback, exit) => {
   // const rd = readline.createInterface({
@@ -76,29 +76,31 @@ const mongoETL = async (sourceFile, keys, insertCallback, exit) => {
   });
 };
 
-const etl = (db) => {
-  for (const table in etlSources) {
-    const etlSourceFile = path.resolve(etlSources[table]);
-    getColNames(etlSourceFile, colNames => {
-      db.query('LOAD DATA LOCAL INFILE "' + etlSourceFile +
-        `" INTO TABLE ${table} ` +
-        'FIELDS TERMINATED BY "," ' +
-        'ENCLOSED BY \'"\' ' +
-        'LINES TERMINATED BY \'\n\' ' +
-        'IGNORE 1 ROWS ' +
-        `(${[colNames]});`, (err, results) => {
-        // db.query(`INSERT IGNORE INTO reviews (${columns}) VALUES (?);`, [row], (err, results, rows) => {
-        if (err) {
-          console.log(err);
-        } else {
-          const time = checkWatch();
-          console.log(results, `${table}: ${time().display.lap} (total: ${time().display.total}`);
-        }
-      });
-    });
-  }
-};
-
+// const etl = (db) => {
+//   for (const table in etlSources) {
+//     const etlSourceFile = path.resolve(etlSources[table]);
+//     getColNames(etlSourceFile, colNames => {
+//       db.query('LOAD DATA LOCAL INFILE "' + etlSourceFile +
+//         `" INTO TABLE ${table} ` +
+//         'FIELDS TERMINATED BY "," ' +
+//         'ENCLOSED BY \'"\' ' +
+//         'LINES TERMINATED BY \'\n\' ' +
+//         'IGNORE 1 ROWS ' +
+//         `(${[colNames]});`, (err, results) => {
+//         // db.query(`INSERT IGNORE INTO reviews (${columns}) VALUES (?);`, [row], (err, results, rows) => {
+//         if (err) {
+//           console.log(err);
+//         } else {
+//           const time = checkWatch();
+//           console.log(results, `${table}: ${time().display.lap} (total: ${time().display.total}`);
+//         }
+//       });
+//     });
+//   }
+// };
+/*
+LOAD DATA LOCAL INFILE "/Users/stevenharder/hackreactor/ReviewsAPI/server/database/dataDump/reviews.csv" INTO TABLE ${table} FIELDS TERMINATED BY "," ENCLOSED BY \'"\' LINES TERMINATED BY \'\n\' IGNORE 1 ROWS (review_id, rating, summary, recommend, response, body, date, reviewer_name, helpfulness);
+*/
 // mongoETL('./dataDump/testFile.csv', console.log, () => {});
 
-module.exports = { etl, mongoETL };
+module.exports = { mongoETL };

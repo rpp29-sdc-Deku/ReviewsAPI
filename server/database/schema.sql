@@ -3,19 +3,19 @@ CREATE DATABASE dekuReviews;
 USE dekuReviews;
 
 CREATE TABLE reviews (
-  id int not null auto_increment,
+  review_id int not null auto_increment,
   product_id int,
-  rating int not null, /* Inner join here? Cache other reviews with the same rating? */
+  rating int not null,
   date bigint not null,
   summary varchar(240),
   body text,
-  recommend boolean,
-  reported boolean,
-  reviewer_name varchar(64) not null, /* Inner join here? Collect other reviews by same reviewer and cache on server? */
+  recommend tinyint(1),
+  reported tinyint(1),
+  reviewer_name varchar(64) not null,
   reviewer_email varchar(64) not null,
   response text,
   helpfulness int,
-  primary key (id)
+  primary key (review_id)
 );
 
 CREATE TABLE ratings (
