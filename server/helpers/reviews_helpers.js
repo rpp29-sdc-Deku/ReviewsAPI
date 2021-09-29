@@ -152,51 +152,81 @@ const getMeta = async (productId) => {
   */
 
   // lookup review_ids by product_id from reviews,
-  // characteristic_ids and ratings by review_id from characteristicReviews,
+  // characteristic_ids and characteristic ratings by review_id from characteristicReviews,
   // characteristics by characteristic_id from characteristics
 
   const reviewsMeta = await reviews.aggregate([
     { $match: { product_id: parseInt(productId), reported: false } },
-    { $project: { _id: 0, review_id: 1 } },
+    // { $project: { _id: 0, review_id: 1 } },
     {
       $lookup: {
         from: 'characteristicReviews',
         localField: 'review_id',
         foreignField: 'review_id',
-        as: 'charReviews'
+        as: 'characteristics'
+        // let: { review_id: '$review_id'},
+        // pipeline: [
+        //   {
+        //     $match: { $expr: { $eq: ['$$review_id', '$review_id'] } }
+        //   },
+        // ]
       }
     },
+    // { $unwind: '$characteristics'},
     // {
     //   $group: {
-    //     _id: null,
-    //     rating: { $avg: '$charReviews.value' }
+    //     _id: '$characteristic_id',
+    //     value: { $avg: '$value' }
     //   }
     // },
-    { $unwind: '$charReviews' },
-    {
-      $lookup: {
-        from: 'characteristics',
-        as: 'chars',
-        let: { charId: '$characteristic_id' },
-        pipeline: [
-          {
-            $match: {
-              $expr: { $eq: ['$$charId', '$id'] }
-            }
-          },
-          { $project: { _id: 0 } }
-        ]
-      }
-    }
+    // {
+    //   $project: { _id: 0, characteristic_id: 1, value: { $avg: '$value' } }
+    // }
+    // // {
+    // //   $group: {
+    // //     _id: null,
+    // //     rating: { $avg: '$charReviews.value' }
+    // //   }
+    // // },
+    // { $unwind: '$charReviews' },
+    // {
+    //   $lookup: {
+    //     from: 'characteristics',
+    //     as: 'chars',
+    //     let: { charId: '$characteristic_id' },
+    //     pipeline: [
+    //       {
+    //         $match: {
+    //           $expr: { $eq: ['$$charId', '$id'] }
+    //         }
+    //       },
+    //       { $project: { _id: 0 } }
+    //     ]
+    //   }
+    // }
     // { $project: { name: 1 } }
   ]).toArray();
 
+  const chars = reviewsMeta.map(review => (review.characteristics));
+
   const response = {
     product_id: productId,
-    characteristics: reviewsMeta.map(review => (review.charReviews))
+    characteristics: chars
   };
 
-  return response;
+  // const charIds = chars.map(char => char.characteristic_id);
+
+  // 1. Existing query
+  // 2. Create a temp obj for chars
+  // { keys=charIds: vals=obj { charIdCount: 0, reviewValuesSum: 0 }}
+  // 3. Query chars to get names from charIds
+  //
+
+  // 1.
+
+  // const queryVals =
+
+  return reviewsMeta;
 
   // const selectedChars = await characteristics.aggregate([
   //   { $match: { product_id: parseInt(productId) } },
