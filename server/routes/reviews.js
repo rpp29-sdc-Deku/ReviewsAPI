@@ -30,7 +30,12 @@ router.get('/reviews/meta', (req, res) => {
       console.log('Reponse from DB:', results);
       res.send(results);
     }).catch(err => {
-      console.log(err.stack);
+      console.error(err.codeName);
+      res.sendStatus(500);
+      // res.end(JSON.stringify(err));
+    })
+    .catch(err => {
+      console.log('Backstop:', err.codeName);
     });
 });
 
