@@ -6,7 +6,7 @@ router.get('/reviews', (req, res) => {
   // const { product_id, sort, page, count, query } = req;
   getReviews(req.query)
     .then(results => {
-      // console.log('Reponse from DB:', results);
+      console.log('Reviews from DB:', results);
       res.send(results);
     }).catch(err => {
       console.error(err.codeName);
@@ -27,7 +27,7 @@ router.put('/reviews/helpful', (req, res) => {
 router.get('/reviews/meta', (req, res) => {
   getMeta(req.query.product_id)
     .then((results) => {
-      console.log('Reponse from DB:', results);
+      console.log('Reviews meta from DB:', results);
       res.send(results);
     }).catch(err => {
       console.error(err.codeName);

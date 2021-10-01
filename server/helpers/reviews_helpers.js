@@ -65,6 +65,7 @@ const getReviews = async ({ product_id = 2, sort = 'newest', page = 0, count = 5
     { $sort: sortOptions[sort] }
   ]).maxTimeMS(50).toArray();
 
+  return selectedReviews;
   // console.log(dbResults);
 
   // const response = {
@@ -74,12 +75,12 @@ const getReviews = async ({ product_id = 2, sort = 'newest', page = 0, count = 5
   //   results: dbResults
   // };
 
-  return {
-    product: product_id,
-    page: page,
-    count: count,
-    results: selectedReviews
-  };
+  // return {
+  //   product: product_id,
+  //   page: page,
+  //   count: count,
+  //   results: selectedReviews
+  // };
 
   // return selectedReviews.map(review => {
   //   // console.log(review.photos);
