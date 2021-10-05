@@ -4,9 +4,17 @@ const { MongoClient } = require('mongodb');
 // const path = require('path');
 // const validator = require('./mongoValidator.js');
 
-const url = 'mongodb://localhost:27017';
+const url = 'mongodb://44.231.20.227:27017';
 const mongo = new MongoClient(url);
-mongo.connect();
+mongo.connect((err, results) => {
+  if (err) {
+    // console.log(err);
+    return err;
+  } else {
+    // console.log('MongoDB connected', results);
+    return results;
+  }
+});
 
 let _db;
 let connected = false;
@@ -43,12 +51,16 @@ const dbName = 'dekuReviews';
 // }
 
 const getDB = async () => {
-  if (connected) {
-    return _db;
-  } else {
-    _db = await mongo.db(dbName);
-    connected = true;
-    return _db;
+  try {
+    if (connected) {
+      return _db;
+    } else {
+      _db = await mongo.db(dbName);
+      connected = true;
+      return _db;
+    }
+  } catch (err) {
+    console.log(err.stack);
   }
 };
 

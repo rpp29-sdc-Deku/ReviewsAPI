@@ -10,15 +10,15 @@ const mongoConnected = async () => {
   if (connected) return true;
 
   db = await getDB();
-  console.log('MongoDB connected');
+  // console.log('MongoDB connected');
   reviews = await db.collection('reviews');
-  console.log('reviews collection ready');
+  // console.log('reviews collection ready');
   photos = await db.collection('photos');
-  console.log('photos collection ready');
+  // console.log('photos collection ready');
   characteristics = await db.collection('characteristics');
-  console.log('characteristics collection ready');
+  // console.log('characteristics collection ready');
   characteristicReviews = await db.collection('characteristicReviews');
-  console.log('characteristic reviews collection ready');
+  // console.log('characteristic reviews collection ready');
   connected = true;
 
   return true;
