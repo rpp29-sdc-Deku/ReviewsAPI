@@ -10,7 +10,8 @@
     ]
   },
   "scripts": {
-    "start": "nodemon server/index.js"
+    "start": "pm2 start server/index.js",
+    "stop": "pm2 stop index"
   },
   "repository": {
     "type": "git",
@@ -53,6 +54,7 @@
     "lodash": "^4.17.21",
     "mongodb": "^4.1.1",
     "mysql": "^2.18.1",
+    "pm2": "^5.1.2",
     "redis": "^3.1.2"
   }
 }
