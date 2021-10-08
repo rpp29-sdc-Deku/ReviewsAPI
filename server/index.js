@@ -10,7 +10,7 @@ require('dotenv').config();
 const reviews = require('./routes/reviews.js');
 const app = express();
 
-// app.use(express.static(path.join(__dirname, '/../client/dist')));
+app.use(express.static(path.join(__dirname, './loaderio')));
 // app.use('/', expressStaticGzip(path.join(__dirname, '/../client/dist'), {
 //   enableBrotli: true
 // }));
