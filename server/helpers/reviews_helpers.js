@@ -38,11 +38,7 @@ const sortOptions = {
   relevant: { helpfulness: -1, date: -1 }
 };
 
-// TODO: replace all axios HTTP requests with DB queries
-
 const getReviews = async ({ product_id = 2, sort = 'newest', page = 0, count = 5 }) => {
-  // console.log('GET reviews:', sort);
-
   const selectedReviews = await reviews.aggregate([
     { $match: { product_id: parseInt(product_id), reported: false } },
     { $limit: parseInt(count) },
@@ -63,77 +59,9 @@ const getReviews = async ({ product_id = 2, sort = 'newest', page = 0, count = 5
       }
     },
     { $sort: sortOptions[sort] }
-  ]).maxTimeMS(50).toArray();
+  ]).maxTimeMS(150).toArray();
 
   return selectedReviews;
-  // console.log(dbResults);
-
-  // const response = {
-  //   product: product_id,
-  //   page: page,
-  //   count: count,
-  //   results: dbResults
-  // };
-
-  // return {
-  //   product: product_id,
-  //   page: page,
-  //   count: count,
-  //   results: selectedReviews
-  // };
-
-  // return selectedReviews.map(review => {
-  //   // console.log(review.photos);
-  //   review.photos = review.photos.map(photo => ({ id: photo.id, url: photo.url }));
-  //   return review;
-  // });
-  // console.log(selectedReviews);
-  // return Promise.resolve(selectedReviews);
-  // MySQL Stuff
-  // const sortOptions = {
-  //   helpful: 'helpfulness',
-  //   newest: 'date',
-  //   relevant: 'helpfulness DESC, date DESC'
-  // };
-
-  // const reviewsQuery = `
-  //   SELECT reviews.*, photos.id, photos.url
-  //   FROM reviews, photos
-  //   WHERE reviews.product_id=5 AND photos.review_id = reviews.id
-  // `;
-
-  // const photoReviewQuery = `select reviews.*, photos.id as photo_id, photos.url from reviews LEFT JOIN photos ON photos.review_id = reviews.id WHERE reviews.product_id=2 AND reviews.reported=false;`
-
-  // return new Promise((resolve, reject) => {
-  //   reviews.find({ product_id: product_id })
-  //     .then(results => {
-  //       console.log(results);
-  //       resolve(results);
-  //     })
-  //     .catch(err => {
-  //       console.log(err.stack);
-  //       reject(err.stack);
-  //     });
-  // });
-  // return new Promise((resolve, reject) => {
-  //   db(reviewsQuery)
-  //     .then(reviews => {
-  //       const photosQuery = `
-  //         SELECT *
-  //         FROM photos
-  //         WHERE id IN (${reviews.map(review => review.id).join(', ')})
-  //       `;
-  //       // console.log(photosQuery);
-  //       db(photosQuery).then(photos => {
-  //         // const RowDataPacket = { photos: photos };
-  //         reviews.photos = photos;
-  //         // console.log(reviews);
-  //         resolve(reviews);
-  //       });
-  //     })
-  //     .catch(err => {
-  //       reject(err.stack);
-  //     });
 };
 
 const getMeta = async (productId) => {
@@ -158,7 +86,7 @@ const getMeta = async (productId) => {
         ]
       }
     }
-  ]).maxTimeMS(50).toArray();
+  ]).maxTimeMS(150).toArray();
 
   const charRatings = reviewsMeta.map(review => review.charReviews);
 
@@ -178,14 +106,12 @@ const getMeta = async (productId) => {
 
   const charNames = {};
   charData.forEach(char => { charNames[char.id] = char.name; });
-  // console.log(charNames);
 
   const ratingsCount = charRatings.length;
   const charRatingTotals = {};
 
   charRatings.forEach(review => {
     review.forEach(rating => {
-      // console.log(charNames[String(rating.characteristic_id)]);
       const charName = charNames[rating.characteristic_id];
       if (charRatingTotals[charName]) {
         charRatingTotals[charName].value += rating.value;
@@ -196,7 +122,6 @@ const getMeta = async (productId) => {
   });
 
   for (const char in charRatingTotals) {
-    // console.log(charRatingTotals[char]);
     charRatingTotals[char].value /= ratingsCount;
   }
 
@@ -242,9 +167,3 @@ const postInteraction = (element) => {
 };
 
 module.exports = { getReviews, getMeta, putHelp, postReview, putReport, postInteraction, fwdQuery };
-// module.exports.getReviews = getReviews;
-// module.exports.getMeta = getMeta;
-// module.exports.putHelp = putHelp;
-// module.exports.postReview = postReview;
-// module.exports.putReport = putReport;
-// module.exports.postInteraction = postInteraction;
