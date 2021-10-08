@@ -1,6 +1,9 @@
 /* eslint-disable camelcase */
 const axios = require('axios');
 const getDB = require('../database/mongo.js');
+// const lz4 = require('lz4');
+// const redis = require('redis');
+// const client = redis.createClient();
 // const db = mysql.connection;
 
 let db, reviews, photos, characteristics, characteristicReviews;
@@ -38,8 +41,18 @@ const sortOptions = {
   relevant: { helpfulness: -1, date: -1 }
 };
 
+const cache = {
+  reviews: new Map(),
+  meta: new Map()
+};
+
 const getReviews = async ({ product_id = 2, sort = 'newest', page = 0, count = 5 }) => {
-  const selectedReviews = await reviews.aggregate([
+  let selectedReviews = cache.reviews.get(product_id);
+  if (selectedReviews) {
+    return selectedReviews;
+  }
+
+  selectedReviews = await reviews.aggregate([
     { $match: { product_id: parseInt(product_id), reported: false } },
     { $limit: parseInt(count) },
     { $project: { _id: 0, review_id: 1, rating: 1, summary: 1, recommend: 1, response: 1, body: 1, date: { $toDate: '$date' }, reviewer_name: 1, helpfulness: 1 } },
@@ -60,6 +73,8 @@ const getReviews = async ({ product_id = 2, sort = 'newest', page = 0, count = 5
     },
     { $sort: sortOptions[sort] }
   ]).maxTimeMS(150).toArray();
+
+  cache.reviews.set(product_id, selectedReviews);
 
   return selectedReviews;
 };
@@ -125,12 +140,16 @@ const getMeta = async (productId) => {
     charRatingTotals[char].value /= ratingsCount;
   }
 
-  return {
+  const meta = {
     product_id: productId,
     ratings: ratings,
     recommended: recommended,
     characteristics: charRatingTotals
   };
+
+  cache.meta.set(productId, meta);
+
+  return meta;
 };
 
 const putHelp = (reviewID) => {
