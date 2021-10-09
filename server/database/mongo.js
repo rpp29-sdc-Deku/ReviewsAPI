@@ -8,7 +8,7 @@ const url = 'mongodb://44.231.20.227:27017';
 const mongo = new MongoClient(url);
 mongo.connect((err, results) => {
   if (err) {
-    // console.log(err);
+    console.log(err);
     return err;
   } else {
     // console.log('MongoDB connected', results);

@@ -1,6 +1,7 @@
 /* eslint-disable camelcase */
 const axios = require('axios');
 const getDB = require('../database/mongo.js');
+const { compress, uncompress } = require('snappy');
 // const lz4 = require('lz4');
 // const redis = require('redis');
 // const client = redis.createClient();
@@ -43,11 +44,22 @@ const sortOptions = {
 
 const cache = {
   reviews: new Map(),
-  meta: new Map()
+  meta: new Map(),
+  update: async (store, key, value) => {
+    const compressedValue = await compress(JSON.stringify(value));
+    this[store].set(key, compressedValue);
+  },
+  check: async (store, key) => {
+    const value = this[store].get(key);
+    if (value) {
+      return uncompress(value).toString();
+    }
+    return false;
+  }
 };
 
-const getReviews = async ({ product_id = 2, sort = 'newest', page = 0, count = 5 }) => {
-  let selectedReviews = cache.reviews.get(product_id);
+const getReviews = async ({ product_id = 2, sort = 'newest', page = 0, count = 100 }) => {
+  let selectedReviews = await cache.check('reviews', product_id); // cache.check('reviews', product_id);
   if (selectedReviews) {
     return selectedReviews;
   }
@@ -74,12 +86,19 @@ const getReviews = async ({ product_id = 2, sort = 'newest', page = 0, count = 5
     { $sort: sortOptions[sort] }
   ]).maxTimeMS(150).toArray();
 
-  cache.reviews.set(product_id, selectedReviews);
+  cache.set('reviews', product_id, selectedReviews);
+  console.log(`${product_id} reviews cached`);
 
   return selectedReviews;
 };
 
 const getMeta = async (productId) => {
+  let meta = cache.meta.get(productId);
+
+  if (meta) {
+    return meta;
+  }
+
   const charData = await characteristics.aggregate([
     { $match: { product_id: parseInt(productId) } },
     { $project: { _id: 0, id: 1, name: 1 } }
@@ -140,7 +159,7 @@ const getMeta = async (productId) => {
     charRatingTotals[char].value /= ratingsCount;
   }
 
-  const meta = {
+  meta = {
     product_id: productId,
     ratings: ratings,
     recommended: recommended,
@@ -148,6 +167,7 @@ const getMeta = async (productId) => {
   };
 
   cache.meta.set(productId, meta);
+  // cache.update('meta', productId, meta);
 
   return meta;
 };
