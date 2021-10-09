@@ -4,8 +4,8 @@ const { MongoClient } = require('mongodb');
 // const path = require('path');
 // const validator = require('./mongoValidator.js');
 
-const url = 'mongodb://44.231.20.227';
-const mongo = new MongoClient(url);
+const url = 'mongodb://44.231.20.227:27017';
+const mongo = new MongoClient(url, { serverSelectionTimeoutMS: 2000, minPoolSize: 8, maxPoolSize: 100, keepAlive: true });
 mongo.connect((err, results) => {
   if (err) {
     console.log(err);
