@@ -5,13 +5,13 @@ const { MongoClient } = require('mongodb');
 // const validator = require('./mongoValidator.js');
 
 const url = 'mongodb://44.231.20.227:27017';
-const mongo = new MongoClient(url);
+const mongo = new MongoClient(url, { serverSelectionTimeoutMS: 2000, minPoolSize: 8, maxPoolSize: 100, keepAlive: true });
 mongo.connect((err, results) => {
   if (err) {
-    // console.log(err);
+    console.log(err);
     return err;
   } else {
-    // console.log('MongoDB connected', results);
+    console.log('MongoDB connected');
     return results;
   }
 });

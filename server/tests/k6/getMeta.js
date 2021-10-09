@@ -24,7 +24,7 @@ export const options = {
       // iterations: 30000,
       preAllocatedVUs: 1000,
       maxVUs: 1000,
-      duration: '30s',
+      duration: '5m',
       // maxDuration: '1m',
       rate: 1000,
       timeUnit: '1s'

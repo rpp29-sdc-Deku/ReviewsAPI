@@ -13,3 +13,4 @@ hackreactor-fec.pem
 /server/database/testData.txt
 atelierKeyPair.pem
 configDB.js
+package-lock.json
