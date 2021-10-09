@@ -10,7 +10,8 @@
     ]
   },
   "scripts": {
-    "start": "pm2 start server/index.js",
+    "start": "nodemon server/index.js",
+    "pm2": "pm2 start server/index.js",
     "stop": "pm2 stop index"
   },
   "repository": {
