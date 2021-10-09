@@ -59,7 +59,7 @@ const cache = {
 };
 
 const getReviews = async ({ product_id = 2, sort = 'newest', page = 0, count = 100 }) => {
-  let selectedReviews = await cache.check('reviews', product_id); // cache.check('reviews', product_id);
+  let selectedReviews = cache.reviews.get(product_id); // cache.check('reviews', product_id);
   if (selectedReviews) {
     return selectedReviews;
   }
@@ -86,7 +86,7 @@ const getReviews = async ({ product_id = 2, sort = 'newest', page = 0, count = 1
     { $sort: sortOptions[sort] }
   ]).maxTimeMS(150).toArray();
 
-  cache.set('reviews', product_id, selectedReviews);
+  cache.reviews.set(product_id, selectedReviews);
   console.log(`${product_id} reviews cached`);
 
   return selectedReviews;
