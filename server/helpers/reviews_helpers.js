@@ -87,7 +87,7 @@ const getReviews = async ({ product_id = 2, sort = 'newest', page = 0, count = 1
   ]).maxTimeMS(150).toArray();
 
   cache.reviews.set(product_id, selectedReviews);
-  console.log(`${product_id} reviews cached`);
+  // console.log(`${product_id} reviews cached`);
 
   return selectedReviews;
 };
