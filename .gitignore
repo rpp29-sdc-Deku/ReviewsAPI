@@ -14,3 +14,4 @@ hackreactor-fec.pem
 atelierKeyPair.pem
 configDB.js
 package-lock.json
+dump.rdb

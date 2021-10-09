@@ -1,9 +1,11 @@
 /* eslint-disable camelcase */
 const axios = require('axios');
+const redis = require('redis');
 const getDB = require('../database/mongo.js');
 const { compress, uncompress } = require('snappy');
+
+const client = redis.createClient(6379);
 // const lz4 = require('lz4');
-// const redis = require('redis');
 // const client = redis.createClient();
 // const db = mysql.connection;
 
@@ -59,12 +61,13 @@ const cache = {
 };
 
 const getReviews = async ({ product_id = 2, sort = 'newest', page = 0, count = 100 }) => {
-  let selectedReviews = cache.reviews.get(product_id); // cache.check('reviews', product_id);
-  if (selectedReviews) {
-    return selectedReviews;
-  }
+  // Basic caching
+  // let selectedReviews = cache.reviews.get(product_id); // cache.check('reviews', product_id);
+  // if (selectedReviews) {
+  //   return selectedReviews;
+  // }
 
-  selectedReviews = await reviews.aggregate([
+  const selectedReviews = await reviews.aggregate([
     { $match: { product_id: parseInt(product_id), reported: false } },
     { $limit: parseInt(count) },
     { $project: { _id: 0, review_id: 1, rating: 1, summary: 1, recommend: 1, response: 1, body: 1, date: { $toDate: '$date' }, reviewer_name: 1, helpfulness: 1 } },
@@ -93,11 +96,11 @@ const getReviews = async ({ product_id = 2, sort = 'newest', page = 0, count = 1
 };
 
 const getMeta = async (productId) => {
-  let meta = cache.meta.get(productId);
+  // let meta = cache.meta.get(productId);
 
-  if (meta) {
-    return meta;
-  }
+  // if (meta) {
+  //   return meta;
+  // }
 
   const charData = await characteristics.aggregate([
     { $match: { product_id: parseInt(productId) } },
@@ -159,17 +162,18 @@ const getMeta = async (productId) => {
     charRatingTotals[char].value /= ratingsCount;
   }
 
-  meta = {
+  // meta = {
+  return {
     product_id: productId,
     ratings: ratings,
     recommended: recommended,
     characteristics: charRatingTotals
   };
 
-  cache.meta.set(productId, meta);
+  // cache.meta.set(productId, meta);
   // cache.update('meta', productId, meta);
 
-  return meta;
+  // return meta;
 };
 
 const putHelp = (reviewID) => {
